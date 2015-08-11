@@ -7,6 +7,7 @@ import audioop
 import sys
 import math
 import struct
+from time import sleep
 
 '''
 Sources
@@ -29,15 +30,15 @@ def list_devices():
 
 def light_sounds(): 
     chunk      = 2**11 # Change if too fast/slow, never less than 2**11
-    scale      = 50    # Change if too dim/bright
-    exponent   = 5     # Change if too little/too much difference between loud and quiet sounds
+    scale      = 40    # Change if too dim/bright
+    exponent   = 1     # Change if too little/too much difference between loud and quiet sounds
     samplerate = 44100 
 
     # Change this setting if input device is different
     # You may need to enable stereo mixing in your sound card
     # to make your sound output an input
     # Use list_devices() to list all your input devices
-    device   = 3
+    device   = 4
     
     p = pyaudio.PyAudio()
     stream = p.open(format = pyaudio.paInt16,
@@ -46,13 +47,9 @@ def light_sounds():
                     input = True,
                     frames_per_buffer = chunk,
                     input_device_index = device)
-    
+
     print "Starting, use Ctrl+C to stop"
     try:
-        #ser = serial.Serial(
-            #port='com3',
-            #timeout=1
-        #)
         while True:
             data  = stream.read(chunk)
 
@@ -75,9 +72,9 @@ def light_sounds():
                 level = max(min(level / scale, 1.0), 0.0)
                 level = level**exponent 
                 level = int(level * 255)
+                level = int(level/25)
                 print level
-                #ser.write(chr(level))
-
+                ser.write(chr(level))
             #s = ser.read(6)
 
     except KeyboardInterrupt:
@@ -86,7 +83,7 @@ def light_sounds():
         print "\nStopping"
         stream.close()
         p.terminate()
-        #ser.close()
+        ser.close()
 
 def calculate_levels(data, chunk, samplerate):
     # Use FFT to calculate volume for each frequency
@@ -116,5 +113,6 @@ def calculate_levels(data, chunk, samplerate):
     return levels
 
 if __name__ == '__main__':
+    ser = serial.Serial('/dev/tty.usbserial-DA017XZ5', 57600, timeout=1)
     list_devices()
     light_sounds()
