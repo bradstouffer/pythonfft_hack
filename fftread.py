@@ -30,8 +30,8 @@ def list_devices():
 
 def light_sounds(): 
     chunk      = 2**11 # Change if too fast/slow, never less than 2**11
-    scale      = 40    # Change if too dim/bright
-    exponent   = 1     # Change if too little/too much difference between loud and quiet sounds
+    scale      = 350    # Change if too dim/bright
+    exponent   = .5     # Change if too little/too much difference between loud and quiet sounds
     samplerate = 44100 
 
     # Change this setting if input device is different
@@ -108,7 +108,6 @@ def calculate_levels(data, chunk, samplerate):
     
     size = len(fourier)
 
-    # Add up for 6 lights
     levels = [sum(fourier[i:(i+size/6)]) for i in xrange(0, size, size/6)][:6]
     return levels
 
