@@ -26,7 +26,8 @@ void loop()
 {
   if (Serial.available() > 1) 
   {
-    command = Serial.read();
+    char colors[] = "RGB";
+    command = colors[rand() % 3];
     value = Serial.read() -48;
     Serial.println(value, DEC);
 
